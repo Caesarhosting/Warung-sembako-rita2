@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warung Sembako Rohima</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-emerald-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white text-emerald-600 p-2 rounded-xl shadow-inner font-bold text-xl">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg sm:text-xl tracking-tight">Warung Sembako Rohima</h1>
+                    <p class="text-xs text-emerald-100 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Buka • Sembako, Es Segar & Pulsa
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="https://wa.me/6287868856878?text=Halo%20Warung%20Sembako%20Rohima,%20saya%20mau%20pesan..." target="_blank" 
+                   class="bg-emerald-500 hover:bg-emerald-400 text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-lg shadow transition flex items-center gap-2 border border-emerald-400">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span class="hidden sm:inline">0878-6885-6878</span>
+                </a>
+                <button onclick="toggleCartModal()" class="relative bg-emerald-700 hover:bg-emerald-800 p-2.5 rounded-lg transition text-white">
+                    <i class="fa-solid fa-cart-shopping text-lg"></i>
+                    <span id="cart-badge" class="absolute -top-1 -right-1 bg-amber-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-emerald-600 hidden">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left & Center: Catalog & Digital Products -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Banner / Hero Information -->
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                <div class="relative z-10">
+                    <span class="bg-amber-400 text-slate-900 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wide">Paling Lengkap & Segar</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold mt-2">Sembako, Minuman Es Segar & Pulsa Jadi Satu</h2>
+                    <p class="text-emerald-100 text-sm mt-1 max-w-lg">Pilih kebutuhan harian, aneka minuman es segar, atau pulsa favoritmu, lalu kirim pesanan langsung via WhatsApp!</p>
+                </div>
+                <div class="absolute -right-6 -bottom-6 text-emerald-800/30 text-9xl font-black pointer-events-none">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                </div>
+            </div>
+
+            <!-- Tabs Navigation -->
+            <div class="flex border-b border-slate-200 space-x-6 text-sm font-semibold overflow-x-auto">
+                <button onclick="switchTab('sembako')" id="tab-sembako" class="pb-3 border-b-2 border-emerald-600 text-emerald-600 flex items-center gap-2 transition whitespace-nowrap">
+                    <i class="fa-solid fa-box-open"></i> Sembako & Barang
+                </button>
+                <button onclick="switchTab('minuman')" id="tab-minuman" class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 transition whitespace-nowrap">
+                    <i class="fa-solid fa-cup-togo"></i> Minuman Es & Segar
+                </button>
+                <button onclick="switchTab('digital')" id="tab-digital" class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 transition whitespace-nowrap">
+                    <i class="fa-solid fa-mobile-screen-button"></i> Pulsa & PPOB
+                </button>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text" id="search-input" oninput="filterProducts()" placeholder="Cari beras, es teh manis, pulsa..." 
+                       class="w-full pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
+            </div>
+
+            <!-- Sembako Grid Section -->
+            <div id="section-sembako" class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-lg text-slate-800">Daftar Sembako & Kebutuhan</h3>
+                    <span class="text-xs text-slate-500" id="count-sembako">Menampilkan semua produk</span>
+                </div>
+                <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <!-- Dynamic Products via JS -->
+                </div>
+            </div>
+
+            <!-- Minuman Es & Segar Section -->
+            <div id="section-minuman" class="space-y-4 hidden">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-lg text-slate-800">Aneka Minuman Es & Segar</h3>
+                    <span class="text-xs text-slate-500" id="count-minuman">Segar & Nikmat</span>
+                </div>
+                <div id="minuman-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <!-- Dynamic Minuman via JS -->
+                </div>
+            </div>
+
+            <!-- Digital Products (Pulsa/PPOB) Section -->
+            <div id="section-digital" class="space-y-4 hidden">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-lg text-slate-800">Pulsa, Paket Data & Token PLN</h3>
+                    <span class="text-xs text-slate-500">Proses Cepat via WhatsApp</span>
+                </div>
+                <div id="digital-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Dynamic Digital Products via JS -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Cart & Quick Summary -->
+        <div class="space-y-6">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 sticky top-20">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                    <h3 class="font-bold text-lg flex items-center gap-2 text-slate-800">
+                        <i class="fa-solid fa-receipt text-emerald-600"></i> Keranjang Belanja
+                    </h3>
+                    <button onclick="clearCart()" class="text-xs text-rose-500 hover:underline">Kosongkan</button>
+                </div>
+
+                <!-- Cart Items List -->
+                <div id="cart-items" class="py-4 divide-y divide-slate-100 max-h-72 overflow-y-auto space-y-3">
+                    <p class="text-slate-400 text-sm text-center py-6">Keranjang masih kosong</p>
+                </div>
+
+                <!-- Cart Total & Info -->
+                <div class="pt-4 border-t border-slate-100 space-y-3">
+                    <div class="flex justify-between text-sm text-slate-600">
+                        <span>Total Item</span>
+                        <span id="cart-total-items" class="font-semibold">0 pcs</span>
+                    </div>
+                    <div class="flex justify-between text-base font-bold text-slate-900">
+                        <span>Total Harga</span>
+                        <span id="cart-total-price" class="text-emerald-600">Rp 0</span>
+                    </div>
+
+                    <!-- Customer Info Form Inputs -->
+                    <div class="space-y-2 pt-2">
+                        <label class="block text-xs font-semibold text-slate-600">Nama Pembeli:</label>
+                        <input type="text" id="buyer-name" placeholder="Masukkan nama Anda" 
+                               class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        
+                        <label class="block text-xs font-semibold text-slate-600">Catatan / Alamat Pengiriman (Opsional):</label>
+                        <textarea id="buyer-note" rows="2" placeholder="Contoh: Jl. Mawar No. 5 / Ambil di warung" 
+                                  class="w-full px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"></textarea>
+                    </div>
+
+                    <button onclick="checkoutWhatsApp()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl shadow transition flex items-center justify-center gap-2 mt-2">
+                        <i class="fa-brands fa-whatsapp text-xl"></i> Pesan via WhatsApp
+                    </button>
+                </div>
+            </div>
+
+            <!-- Store Info Card -->
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3 text-sm">
+                <h4 class="font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-emerald-600"></i> Informasi Warung
+                </h4>
+                <ul class="space-y-2 text-slate-600 text-xs sm:text-sm">
+                    <li class="flex items-start gap-2">
+                        <i class="fa-solid fa-location-dot text-rose-500 mt-1"></i>
+                        <span><strong>Alamat:</strong> Jl. Mawar Blok B1 No.1 Pondok Aren, Pondok Timur.</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-amber-500"></i>
+                        <span>Jam Operasional: 07.00 - 21.00 WIB</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i class="fa-solid fa-phone text-emerald-600"></i>
+                        <span>WhatsApp Resmi: 0878-6885-6878</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-400 text-xs py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p>&copy; 2026 Warung Sembako Rohima. Seluruh Hak Cipta Dilindungi.</p>
+            <p>Pusat Sembako & Pulsa Terlengkap di Kota Anda.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Data Produk Sembako
+        const sembakoProducts = [
+            { id: 1, name: "Beras Premium 5kg", category: "sembako", price: 68000, unit: "Sak", image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80" },
+            { id: 2, name: "Minyak Goreng 2L", category: "sembako", price: 34000, unit: "Pouch", image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=400&q=80" },
+            { id: 3, name: "Gula Pasir 1kg", category: "sembako", price: 17500, unit: "Kg", image: "https://images.unsplash.com/photo-1581441363689-1f3c3c342615?auto=format&fit=crop&w=400&q=80" },
+            { id: 4, name: "Telur Ayam 1kg", category: "sembako", price: 28000, unit: "Kg", image: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=400&q=80" },
+            { id: 5, name: "Tepung Terigu 1kg", category: "sembako", price: 12000, unit: "Kg", image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80" },
+            { id: 6, name: "Kopi Bubuk Hitam", category: "sembako", price: 8500, unit: "Bungkus", image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80" },
+            { id: 7, name: "Teh Celup Melati", category: "sembako", price: 9000, unit: "Kotak", image: "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=400&q=80" },
+            { id: 8, name: "Mie Instan Goreng/Kuah", category: "sembako", price: 3200, unit: "Bungkus", image: "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=400&q=80" },
+            { id: 9, name: "Sabun Mandi Batang", category: "kebersihan", price: 4500, unit: "Pcs", image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=400&q=80" },
+            { id: 10, name: "Deterjen Bubuk 800g", category: "kebersihan", price: 19000, unit: "Bungkus", image: "https://images.unsplash.com/photo-1585837575652-267fb5e5349e?auto=format&fit=crop&w=400&q=80" },
+            { id: 11, name: "Pembersih Lantai 800ml", category: "kebersihan", price: 15000, unit: "Pouch", image: "https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=400&q=80" },
+            { id: 12, name: "Air Mineral Galon", category: "sembako", price: 20000, unit: "Galon", image: "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=400&q=80" }
+        ];
+
+        // Data Produk Minuman Es & Segar
+        const minumanProducts = [
+            { id: 'm1', name: "Es Teh Manis Segar", category: "minuman", price: 5000, unit: "Gelas", image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80" },
+            { id: 'm2', name: "Es Jeruk Peras Asli", category: "minuman", price: 7000, unit: "Gelas", image: "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=400&q=80" },
+            { id: 'm3', name: "Es Cokelat Susu Dingin", category: "minuman", price: 9000, unit: "Cup", image: "https://images.unsplash.com/photo-1541658016709-82535e94bc69?auto=format&fit=crop&w=400&q=80" },
+            { id: 'm4', name: "Es Kopi Susu Gula Aren", category: "minuman", price: 10000, unit: "Cup", image: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=400&q=80" },
+            { id: 'm5', name: "Es Kelapa Muda Segar", category: "minuman", price: 12000, unit: "Bungkus", image: "https://images.unsplash.com/photo-1546173159-315724a31696?auto=format&fit=crop&w=400&q=80" },
+            { id: 'm6', name: "Es Soda Gembira", category: "minuman", price: 11000, unit: "Gelas", image: "https://images.unsplash.com/photo-1536935338788-846bb9981813?auto=format&fit=crop&w=400&q=80" }
+        ];
+
+        // Data Produk Digital (Pulsa, Paket Data, Token)
+        const digitalProducts = [
+            { id: 'd1', name: "Pulsa Reguler 10.000", category: "pulsa", price: 12000, desc: "Semua Operator (Telkomsel, Indosat, XL, Tri, Smartfren)" },
+            { id: 'd2', name: "Pulsa Reguler 20.000", category: "pulsa", price: 22000, desc: "Semua Operator" },
+            { id: 'd3', name: "Pulsa Reguler 50.000", category: "pulsa", price: 51500, desc: "Semua Operator" },
+            { id: 'd4', name: "Pulsa Reguler 100.000", category: "pulsa", price: 101000, desc: "Semua Operator" },
+            { id: 'd5', name: "Token Listrik PLN 20.000", category: "token", price: 22000, desc: "Token Listrik Prabayar Resmi" },
+            { id: 'd6', name: "Token Listrik PLN 50.000", category: "token", price: 52000, desc: "Token Listrik Prabayar Resmi" },
+            { id: 'd7', name: "Token Listrik PLN 100.000", category: "token", price: 102000, desc: "Token Listrik Prabayar Resmi" },
+            { id: 'd8', name: "Paket Data Internet 5GB", category: "data", price: 25000, desc: "Berlaku 3 Hari - Semua Operator" }
+        ];
+
+        let cart = [];
+        let currentTab = 'sembako';
+
+        // Format Mata uang Rupiah
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+        }
+
+        // Render Produk Sembako
+        function renderSembako(productsToRender) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+            
+            if (productsToRender.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 text-sm">Produk sembako tidak ditemukan.</div>`;
+                return;
+            }
+
+            productsToRender.forEach(product => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+                        <div>
+                            <div class="h-32 sm:h-36 bg-slate-100 overflow-hidden relative">
+                                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80'">
+                            </div>
+                            <div class="p-3">
+                                <span class="text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">${product.category}</span>
+                                <h4 class="font-bold text-sm text-slate-800 mt-1 line-clamp-1">${product.name}</h4>
+                                <p class="text-xs text-slate-500">Per ${product.unit}</p>
+                            </div>
+                        </div>
+                        <div class="p-3 pt-0 flex items-center justify-between mt-2">
+                            <span class="font-bold text-emerald-600 text-sm sm:text-base">${formatRupiah(product.price)}</span>
+                            <button onclick="addToCart('${product.id}', 'sembako')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-2 rounded-lg font-semibold transition flex items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-plus"></i> Beli
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('count-sembako').innerText = `Menampilkan ${productsToRender.length} produk`;
+        }
+
+        // Render Produk Minuman Es
+        function renderMinuman(productsToRender) {
+            const grid = document.getElementById('minuman-grid');
+            grid.innerHTML = '';
+
+            if (productsToRender.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 text-sm">Minuman tidak ditemukan.</div>`;
+                return;
+            }
+
+            productsToRender.forEach(product => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+                        <div>
+                            <div class="h-32 sm:h-36 bg-slate-100 overflow-hidden relative">
+                                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover hover:scale-105 transition duration-300" onerror="this.src='https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80'">
+                            </div>
+                            <div class="p-3">
+                                <span class="text-[10px] uppercase font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded">${product.category}</span>
+                                <h4 class="font-bold text-sm text-slate-800 mt-1 line-clamp-1">${product.name}</h4>
+                                <p class="text-xs text-slate-500">Per ${product.unit}</p>
+                            </div>
+                        </div>
+                        <div class="p-3 pt-0 flex items-center justify-between mt-2">
+                            <span class="font-bold text-emerald-600 text-sm sm:text-base">${formatRupiah(product.price)}</span>
+                            <button onclick="addToCart('${product.id}', 'minuman')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-2 rounded-lg font-semibold transition flex items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-plus"></i> Beli
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('count-minuman').innerText = `Menampilkan ${productsToRender.length} menu`;
+        }
+
+        // Render Produk Digital
+        function renderDigital(productsToRender) {
+            const grid = document.getElementById('digital-grid');
+            grid.innerHTML = '';
+
+            productsToRender.forEach(item => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex flex-col justify-between hover:shadow-md transition">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] uppercase font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">${item.category}</span>
+                                <span class="text-xs font-semibold text-slate-500">Instan</span>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mt-2">${item.name}</h4>
+                            <p class="text-xs text-slate-500 mt-1">${item.desc}</p>
+                        </div>
+                        <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
+                            <span class="font-bold text-emerald-600 text-base">${formatRupiah(item.price)}</span>
+                            <button onclick="addToCart('${item.id}', 'digital')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-2 rounded-lg font-semibold transition flex items-center gap-1 shadow-sm">
+                                <i class="fa-solid fa-cart-plus"></i> Tambah
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            currentTab = tab;
+            const tabSembako = document.getElementById('tab-sembako');
+            const tabMinuman = document.getElementById('tab-minuman');
+            const tabDigital = document.getElementById('tab-digital');
+            const secSembako = document.getElementById('section-sembako');
+            const secMinuman = document.getElementById('section-minuman');
+            const secDigital = document.getElementById('section-digital');
+
+            // Reset tabs style
+            tabSembako.className = "pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 transition whitespace-nowrap";
+            tabMinuman.className = "pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 transition whitespace-nowrap";
+            tabDigital.className = "pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 transition whitespace-nowrap";
+
+            secSembako.classList.add('hidden');
+            secMinuman.classList.add('hidden');
+            secDigital.classList.add('hidden');
+
+            if (tab === 'sembako') {
+                tabSembako.className = "pb-3 border-b-2 border-emerald-600 text-emerald-600 flex items-center gap-2 transition font-semibold whitespace-nowrap";
+                secSembako.classList.remove('hidden');
+            } else if (tab === 'minuman') {
+                tabMinuman.className = "pb-3 border-b-2 border-emerald-600 text-emerald-600 flex items-center gap-2 transition font-semibold whitespace-nowrap";
+                secMinuman.classList.remove('hidden');
+            } else {
+                tabDigital.className = "pb-3 border-b-2 border-emerald-600 text-emerald-600 flex items-center gap-2 transition font-semibold whitespace-nowrap";
+                secDigital.classList.remove('hidden');
+            }
+            filterProducts();
+        }
+
+        // Filter Products based on Search Input
+        function filterProducts() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            if (currentTab === 'sembako') {
+                const filtered = sembakoProducts.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
+                renderSembako(filtered);
+            } else if (currentTab === 'minuman') {
+                const filtered = minumanProducts.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
+                renderMinuman(filtered);
+            } else {
+                const filtered = digitalProducts.filter(p => p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+                renderDigital(filtered);
+            }
+        }
+
+        // Add to Cart
+        function addToCart(id, type) {
+            let product;
+            if (type === 'sembako') {
+                product = sembakoProducts.find(p => p.id == id);
+            } else if (type === 'minuman') {
+                product = minumanProducts.find(p => p.id == id);
+            } else {
+                product = digitalProducts.find(p => p.id == id);
+            }
+
+            const existingIndex = cart.findIndex(item => item.id == id && item.type === type);
+            if (existingIndex > -1) {
+                cart[existingIndex].qty += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    type: type,
+                    qty: 1
+                });
+            }
+            updateCartUI();
+        }
+
+        // Update Quantity in Cart
+        function updateQty(index, change) {
+            cart[index].qty += change;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        // Clear Cart
+        function clearCart() {
+            cart = [];
+            updateCartUI();
+        }
+
+        // Update Cart Interface & Totals
+        function updateCartUI() {
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartBadge = document.getElementById('cart-badge');
+            const totalItemsEl = document.getElementById('cart-total-items');
+            const totalPriceEl = document.getElementById('cart-total-price');
+
+            cartItemsContainer.innerHTML = '';
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `<p class="text-slate-400 text-sm text-center py-6">Keranjang masih kosong</p>`;
+                cartBadge.classList.add('hidden');
+                totalItemsEl.innerText = `0 pcs`;
+                totalPriceEl.innerText = formatRupiah(0);
+                return;
+            }
+
+            let totalItems = 0;
+            let totalPrice = 0;
+            cartBadge.classList.remove('hidden');
+
+            cart.forEach((item, index) => {
+                totalItems += item.qty;
+                totalPrice += item.price * item.qty;
+
+                cartItemsContainer.innerHTML += `
+                    <div class="py-2.5 flex items-center justify-between text-sm">
+                        <div class="pr-2 flex-grow">
+                            <h5 class="font-semibold text-slate-800 line-clamp-1">${item.name}</h5>
+                            <span class="text-xs text-emerald-600 font-medium">${formatRupiah(item.price)}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateQty(${index}, -1)" class="w-6 h-6 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 flex items-center justify-center font-bold text-xs">-</button>
+                            <span class="text-xs font-semibold w-5 text-center">${item.qty}</span>
+                            <button onclick="updateQty(${index}, 1)" class="w-6 h-6 bg-slate-100 hover:bg-slate-200 rounded text-slate-700 flex items-center justify-center font-bold text-xs">+</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            totalItemsEl.innerText = `${totalItems} pcs`;
+            totalPriceEl.innerText = formatRupiah(totalPrice);
+            cartBadge.innerText = totalItems;
+        }
+
+        // Checkout WhatsApp Function
+        function checkoutWhatsApp() {
+            if (cart.length === 0) {
+                alert("Keranjang belanja masih kosong! Silakan pilih produk terlebih dahulu.");
+                return;
+            }
+
+            const buyerName = document.getElementById('buyer-name').value.trim();
+            const buyerNote = document.getElementById('buyer-note').value.trim();
+
+            if (!buyerName) {
+                alert("Mohon masukkan Nama Pembeli terlebih dahulu.");
+                document.getElementById('buyer-name').focus();
+                return;
+            }
+
+            let message = `Halo Warung Sembako Rohima, saya ingin memesan produk berikut:\n\n`;
+            message += `*Nama Pembeli:* ${buyerName}\n`;
+            if (buyerNote) {
+                message += `*Catatan/Alamat Pengiriman:* ${buyerNote}\n`;
+            }
+            message += `------------------------------------\n`;
+
+            let totalPrice = 0;
+            cart.forEach((item, index) => {
+                let subTotal = item.price * item.qty;
+                totalPrice += subTotal;
+                message += `${index + 1}. ${item.name} (${item.qty}x) - ${formatRupiah(subTotal)}\n`;
+            });
+
+            message += `------------------------------------\n`;
+            message += `*Total Pembayaran: ${formatRupiah(totalPrice)}*\n\n`;
+            message += `Mohon segera diproses ya, terima kasih!`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const waNumber = "6287868856878";
+            const waUrl = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+
+            window.open(waUrl, '_blank');
+        }
+
+        // Inisialisasi awal aplikasi
+        window.onload = function() {
+            renderSembako(sembakoProducts);
+            renderMinuman(minumanProducts);
+            renderDigital(digitalProducts);
+        };
+    </script>
+</body>
+</html>
